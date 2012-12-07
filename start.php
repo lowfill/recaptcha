@@ -16,14 +16,6 @@ elgg_register_event_handler('init', 'system', 'recaptcha_init');
  */
 function recaptcha_init() {
 
-    /* when we create an elgg plugin settings page, elgg tries to handle the form submission
-     * here we override the elggs default submit action by a custom function
-     * plugin settings file: /recaptcha/views/default/plugins/recaptcha/settings.php
-     * submit handler: /recaptcha/actions/recaptcha/settings/save.php
-     */
-    $actions = __DIR__ . '/actions/recaptcha';
-    elgg_register_action('recaptcha/settings/save', "$actions/settings/save.php", 'admin');
-
 	// register form check action when the user registration takes place
 	elgg_register_plugin_hook_handler('action', 'register', 'recaptcha_check_form');
 
@@ -54,23 +46,18 @@ function recaptcha_check_form($hook, $type, $returnvalue, $params) {
     elgg_make_sticky_form('register');
 
     /*-- check if the 'Use Recaptcha for user registration' Plugin setting is enabled --*/
-
-    //fetch the plugin settings
-    $plugin_entity = elgg_get_plugin_from_id('recaptcha');
-    $plugin_settings = $plugin_entity->getAllSettings();
-
     if(array_key_exists('recaptcha_verified', $_SESSION) && $_SESSION['recaptcha_verified'] == 1) {
         ; //do nothing
     }
     else {
-        if($plugin_settings['require_recaptcha'] == 'on') { //if the setting is enabled
+        if(elgg_get_plugin_setting('require_recaptcha','recapcha') == 'on') { //if the setting is enabled
 
             // include the recaptcha lib
             require_once('lib/recaptchalib.php');
 
             // check the recaptcha
             $resp = recaptcha_check_answer (
-                $plugin_settings['recaptcha_private_key'],
+                elgg_get_plugin_setting('recaptcha_private_key','recapcha'),
                 $_SERVER["REMOTE_ADDR"],
                 $_POST["recaptcha_challenge_field"],
                 $_POST["recaptcha_response_field"]

@@ -4,17 +4,11 @@
  * form submission handled at /mod/recaptcha/actions/recaptcha/save.php
  */
 
-$require_recaptcha = '';
-$recaptcha_public_key = '';
-$recaptcha_private_key = '';
-
 // get the plugin settings
-$plugin_entity = elgg_get_plugin_from_id('recaptcha');
-$plugin_settings = $plugin_entity->getAllSettings();
 
-if (isset($plugin_settings['require_recaptcha'])) $require_recaptcha = $plugin_settings['require_recaptcha'];
-if (isset($plugin_settings['recaptcha_public_key'])) $recaptcha_public_key = $plugin_settings['recaptcha_public_key'];
-if (isset($plugin_settings['recaptcha_private_key'])) $recaptcha_private_key = $plugin_settings['recaptcha_private_key'];
+$require_recaptcha = $vars['entity']->require_recaptcha;
+$recaptcha_public_key = $vars['entity']->recaptcha_public_key;
+$recaptcha_private_key = $vars['entity']->recaptcha_private_key;
 
 
 $form_body = "<div>";
@@ -28,7 +22,7 @@ $form_body .= '<label>'.elgg_echo('recaptcha:signup', array($recaptcha_signup_li
 // use recaptcha for registration option
 //checkbox
 $options = array(
-    'name' => 'require_recaptcha',
+    'name' => 'params[require_recaptcha]',
     'default' => '',
 );
 if($require_recaptcha != '') $options['checked'] = '';
@@ -42,7 +36,7 @@ $form_body .= '<label>'.elgg_echo('recaptcha:public_key') . '</label><br>';
 $form_body .= elgg_view(
 	"input/text",
 	array(	
-		'name' => 'recaptcha_public_key',
+		'name' => 'params[recaptcha_public_key]',
 		'value' => $recaptcha_public_key
 ));
 
@@ -55,7 +49,7 @@ $form_body .= '<label>'.elgg_echo('recaptcha:private_key') . '</label><br>';
 $form_body .= elgg_view(
 	"input/password",
 	array(	
-		'name' => 'recaptcha_private_key',
+		'name' => 'params[recaptcha_private_key]',
 		'value' => $recaptcha_private_key
 ));
 
